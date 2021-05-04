@@ -228,8 +228,6 @@ def get_patches(img):
     for i in range(1,len(img)-1):
         #iterate through columns
         for j in range(1,len(img[0])-1):
-            #grayleft[i][j] starts on middle pixel
-            #find the rest of the patch (adjacent pixels)
             patches.append((img[i-1:i+2,j-1:j+2],(i,j)))
 
     return patches
@@ -239,6 +237,8 @@ def main():
     # img[0:150, 0:300] = [0, 255, 0]
 
     cluster_input = img.reshape((img.shape[1] * img.shape[0], 3))
+    img2 = cv2.imread('imgs/right.jpg')
+    img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)
     colors, cluster_dict = kmeans(cluster_input)
 
     h = img.shape[0]
@@ -254,8 +254,21 @@ def main():
                     tmpcolor = color
             img[y, x] = tmpcolor
 
-    plt.imshow(img)
+    h = img2.shape[0]
+    w = img2.shape[1]
+    for y in range(0, h):
+        for x in range(0, w):
+            min = sys.maxsize
+            tmpcolor = [0, 0, 0]
+            for color in colors:
+                dist = eclud_dist(img2[y, x], color)
+                if min > dist:
+                    min = dist
+                    tmpcolor = color
+            img2[y, x] = tmpcolor
+    plt.imshow(combine(img,img2))
     plt.show()
+
     # ///////////////////////////////////////////////////////////////////////
     # recolor the right side of the image
     '''
@@ -320,12 +333,24 @@ def main():
 
     plt.imshow(combine(img,greyR))
     plt.show()
+    calculatediff(img2,greyR)
 
 def combine(left,right):
     combined = []
     for i in range(0, len(left)):
         combined.append(list(left[i]) + list(right[i]))
     return combined
+
+def calculatediff(img,predicted_image):
+    numPixel = len(img)*len(img[1])
+    correct = 0
+    for i in range(0,len(img)):
+        for j in range(0,len(img[1])):
+            comparison = img[i,j] == predicted_image[i,j]
+            equal_arrays = comparison.all()
+            if equal_arrays:
+                correct +=1
+    print(str(1-(correct/numPixel))+" correctness")
 
 if __name__ == "__main__":
     main()
