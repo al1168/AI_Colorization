@@ -264,7 +264,6 @@ def main():
     '''
     greyR = cv2.imread('imgs/grayRight.jpg')
     greyL = cv2.imread('imgs/grayLeft.jpg')
-
     greyLp = get_patches(greyL)
 
     for i in range(1, len(greyR) - 1):
@@ -318,44 +317,15 @@ def main():
                             greyR[i,j] = mode1color
             else:
                 greyR[i,j] = mode1color
-    plt.imshow(greyR)
-    plt.show()
-            #             for x in range(6):
-            #                 patch = pqe.get()
-            #                 q, z = patch[1]
-            #                 color = img[q, z]
-            #                 clst.append(color)
-            #                 print(color)
-            #                 print(clst)
-            #             m = stats.mode(clst)
-            #             mode1 = m[0]
-            #             for x in range(len(clst)):
-            #                 comparison = clst[x] == m[0]
-            #                 equal_arrays = comparison.all()
-            #                 # print(equal_arrays)
-            #                 if not equal_arrays:
-            #                     clst.append(clst[x])
-            #             y = stats.mode(nclst)
-            #             mode2 = y[0]
-            #             if y[1] == m[1]:
-            #                 for x in range(len(clst)):
-            #                     popped = clst.pop()
-            #                     if popped == mode1:
-            #                         greyR[i, j] = mode2
-            #                     if popped == mode2:
-            #                         greyR[i, j] = mode1
-            #                         break
-            #             else:
-            #                 greyR[i, j] = mode1
 
-                # for x in range(len(clst)):
-                #                 popped = clst.pop()
-                #                 if popped == mode1:
-                #                     greyR[i, j] = mode2
-                #                 if popped == mode2:
-                #                     greyR[i, j] = mode1
-                #                     break
-                #         else:
-                #             greyR[i, j] = mode1
+    plt.imshow(combine(img,greyR))
+    plt.show()
+
+def combine(left,right):
+    combined = []
+    for i in range(0, len(left)):
+        combined.append(list(left[i]) + list(right[i]))
+    return combined
+
 if __name__ == "__main__":
     main()
