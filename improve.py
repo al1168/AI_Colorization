@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import random
 import matplotlib.pyplot as plt
+from PIL.ImageOps import scale
 
 from basic import *
 from processing import *
@@ -109,7 +110,7 @@ def main():
     weight1,weight2 = create_model(left)
     ret = apply_model(weight1, weight2, right_gray)
 
-    plt.imshow(ret)
+    plt.imshow(combine(left,ret))
     plt.show()
 
 if __name__ == "__main__":

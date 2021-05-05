@@ -18,10 +18,6 @@ def eclud_dist(centroid, data_pnt):
     return np.linalg.norm(centroid - data_pnt)
 
 
-def predictpixel(representative_colors, grey_image):
-    pass
-
-
 def kmeans(input):
     colors = []
     id = list(range(0, len(input)))
