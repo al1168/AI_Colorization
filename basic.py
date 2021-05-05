@@ -228,8 +228,6 @@ def get_patches(img):
     for i in range(1,len(img)-1):
         #iterate through columns
         for j in range(1,len(img[0])-1):
-            #grayleft[i][j] starts on middle pixel
-            #find the rest of the patch (adjacent pixels)
             patches.append((img[i-1:i+2,j-1:j+2],(i,j)))
 
     return patches
@@ -239,6 +237,8 @@ def main():
     # img[0:150, 0:300] = [0, 255, 0]
 
     cluster_input = img.reshape((img.shape[1] * img.shape[0], 3))
+    img2 = cv2.imread('imgs/right.jpg')
+    img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)
     colors, cluster_dict = kmeans(cluster_input)
 
     h = img.shape[0]
@@ -254,8 +254,21 @@ def main():
                     tmpcolor = color
             img[y, x] = tmpcolor
 
-    plt.imshow(img)
+    h = img2.shape[0]
+    w = img2.shape[1]
+    for y in range(0, h):
+        for x in range(0, w):
+            min = sys.maxsize
+            tmpcolor = [0, 0, 0]
+            for color in colors:
+                dist = eclud_dist(img2[y, x], color)
+                if min > dist:
+                    min = dist
+                    tmpcolor = color
+            img2[y, x] = tmpcolor
+    plt.imshow(combine(img,img2))
     plt.show()
+
     # ///////////////////////////////////////////////////////////////////////
     # recolor the right side of the image
     '''
@@ -264,7 +277,6 @@ def main():
     '''
     greyR = cv2.imread('imgs/grayRight.jpg')
     greyL = cv2.imread('imgs/grayLeft.jpg')
-
     greyLp = get_patches(greyL)
 
     for i in range(1, len(greyR) - 1):
@@ -318,44 +330,27 @@ def main():
                             greyR[i,j] = mode1color
             else:
                 greyR[i,j] = mode1color
-    plt.imshow(greyR)
-    plt.show()
-            #             for x in range(6):
-            #                 patch = pqe.get()
-            #                 q, z = patch[1]
-            #                 color = img[q, z]
-            #                 clst.append(color)
-            #                 print(color)
-            #                 print(clst)
-            #             m = stats.mode(clst)
-            #             mode1 = m[0]
-            #             for x in range(len(clst)):
-            #                 comparison = clst[x] == m[0]
-            #                 equal_arrays = comparison.all()
-            #                 # print(equal_arrays)
-            #                 if not equal_arrays:
-            #                     clst.append(clst[x])
-            #             y = stats.mode(nclst)
-            #             mode2 = y[0]
-            #             if y[1] == m[1]:
-            #                 for x in range(len(clst)):
-            #                     popped = clst.pop()
-            #                     if popped == mode1:
-            #                         greyR[i, j] = mode2
-            #                     if popped == mode2:
-            #                         greyR[i, j] = mode1
-            #                         break
-            #             else:
-            #                 greyR[i, j] = mode1
 
-                # for x in range(len(clst)):
-                #                 popped = clst.pop()
-                #                 if popped == mode1:
-                #                     greyR[i, j] = mode2
-                #                 if popped == mode2:
-                #                     greyR[i, j] = mode1
-                #                     break
-                #         else:
-                #             greyR[i, j] = mode1
+    plt.imshow(combine(img,greyR))
+    plt.show()
+    calculatediff(img2,greyR)
+
+def combine(left,right):
+    combined = []
+    for i in range(0, len(left)):
+        combined.append(list(left[i]) + list(right[i]))
+    return combined
+
+def calculatediff(img,predicted_image):
+    numPixel = len(img)*len(img[1])
+    correct = 0
+    for i in range(0,len(img)):
+        for j in range(0,len(img[1])):
+            comparison = img[i,j] == predicted_image[i,j]
+            equal_arrays = comparison.all()
+            if equal_arrays:
+                correct +=1
+    print(str(1-(correct/numPixel))+" correctness")
+
 if __name__ == "__main__":
     main()
